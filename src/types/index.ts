@@ -13,18 +13,19 @@ export type BodyPartId =
 export interface BodyPartMeta {
   id: BodyPartId
   label: string
+  emoji: string
   transformOrigin: 'bottom center' | 'top center'
 }
 
 export const BODY_PARTS: BodyPartMeta[] = [
-  { id: 'neck',        label: '首',         transformOrigin: 'bottom center' },
-  { id: 'shoulders',   label: '肩',         transformOrigin: 'bottom center' },
-  { id: 'upper-back',  label: '胸・背中',   transformOrigin: 'bottom center' },
-  { id: 'lower-back',  label: '腰',         transformOrigin: 'top center'    },
-  { id: 'hips',        label: '股関節',     transformOrigin: 'top center'    },
-  { id: 'thighs',      label: 'もも',       transformOrigin: 'top center'    },
-  { id: 'calves',      label: 'ふくらはぎ', transformOrigin: 'top center'    },
-  { id: 'arms',        label: '腕・手首',   transformOrigin: 'top center'    },
+  { id: 'neck',        label: '首',         emoji: '🙆', transformOrigin: 'bottom center' },
+  { id: 'shoulders',   label: '肩',         emoji: '💁', transformOrigin: 'bottom center' },
+  { id: 'upper-back',  label: '胸・背中',   emoji: '🫁', transformOrigin: 'bottom center' },
+  { id: 'lower-back',  label: '腰',         emoji: '🌊', transformOrigin: 'top center'    },
+  { id: 'hips',        label: '股関節',     emoji: '🧘', transformOrigin: 'top center'    },
+  { id: 'thighs',      label: 'もも',       emoji: '🦵', transformOrigin: 'top center'    },
+  { id: 'calves',      label: 'ふくらはぎ', emoji: '🏃', transformOrigin: 'top center'    },
+  { id: 'arms',        label: '腕・手首',   emoji: '💪', transformOrigin: 'top center'    },
 ] as const
 
 // ========== 記録エンティティ ==========

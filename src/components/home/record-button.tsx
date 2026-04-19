@@ -1,14 +1,15 @@
 import Link from 'next/link'
+import { Plus } from 'lucide-react'
 
 export function RecordButton() {
   return (
-    <section className="mt-2">
+    <section>
       <Link
         href="/record"
         className="w-full h-14 rounded-xl font-headline font-bold text-lg flex items-center justify-center gap-3 active:scale-95 transition-transform duration-300 custom-shadow-green"
         style={{ backgroundColor: 'var(--primary)', color: 'white' }}
       >
-        <span className="text-xl">＋</span>
+        <Plus className="w-6 h-6" strokeWidth={3} />
         <span>ストレッチを記録する</span>
       </Link>
       <p

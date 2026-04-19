@@ -13,14 +13,21 @@ export function BodyPartBadge({ stats }: BodyPartBadgeProps) {
         const stat = stats[part.id]
         const minutes = stat?.totalMinutes ?? 0
         const scale = stat?.scaleFactor ?? 1
-        const pct = Math.round((scale - 1) / 0.6 * 100)
+        const pct = Math.round(((scale - 1) / 0.6) * 100)
 
         return (
           <div
             key={part.id}
-            className="flex flex-col items-center gap-1 p-2 rounded-xl"
-            style={{ backgroundColor: 'var(--surface-container-low)' }}
+            className="flex flex-col items-center gap-1 px-2 py-3 rounded-xl card-shadow"
+            style={{ backgroundColor: 'var(--surface-container-lowest)' }}
           >
+            <span className="text-xl leading-none select-none">{part.emoji}</span>
+            <span
+              className="text-[10px] font-semibold"
+              style={{ color: 'var(--on-surface-variant)' }}
+            >
+              {part.label}
+            </span>
             <div
               className="w-full h-1.5 rounded-full overflow-hidden"
               style={{ backgroundColor: 'var(--surface-variant)' }}
@@ -28,15 +35,15 @@ export function BodyPartBadge({ stats }: BodyPartBadgeProps) {
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
-                  width: `${pct}%`,
+                  width: `${Math.min(100, Math.max(0, pct))}%`,
                   backgroundColor: 'var(--primary-container)',
                 }}
               />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: 'var(--on-surface-variant)' }}>
-              {part.label}
-            </span>
-            <span className="text-xs font-bold font-headline" style={{ color: 'var(--primary)' }}>
+            <span
+              className="text-[11px] font-bold font-headline"
+              style={{ color: 'var(--primary)' }}
+            >
               {minutes}分
             </span>
           </div>

@@ -35,8 +35,9 @@ export function BottomNav() {
               isActive
                 ? {
                     backgroundColor: 'var(--primary-container)',
-                    color: 'var(--on-primary-container)',
+                    color: 'white',
                     transform: 'scale(1.05)',
+                    boxShadow: '0 8px 20px -6px rgba(50, 106, 53, 0.35)',
                   }
                 : { color: 'var(--secondary)' }
             }
