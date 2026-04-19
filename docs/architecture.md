@@ -104,8 +104,8 @@ scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FA
 
 ## ビジュアル方針
 
-- **全体トーン:** `src/mock-design/mock-home-design.html` のカラーパレットを踏襲
-  （暖かいグリーン・ベージュ系。`#fff8f4` 背景、`#326a35` プライマリ）
+- **全体トーン:** Hokkori Modernism（暖かいグリーン・ベージュ系。`#fff8f4` 背景、`#326a35` プライマリ）。
+  詳細は `.claude/rules/ui.md` を参照
 - **キャラクター:** SVGで描いた人体シルエット。各 `<g>` タグに部位IDを付与し、JS から `transform` を操作
 - **アニメーション:** CSS `transform: scaleY()` + spring easing。Lottie は使用しない
 - **フォント:** Plus Jakarta Sans（ヘッドライン）/ Be Vietnam Pro（本文）を維持

@@ -70,8 +70,14 @@
 │   │   └─ supabase/            # DBクライアント・クエリ（未実装）
 │   └─ types/
 │       └─ index.ts             # BodyPart, StretchLog, BodyPartStats 型定義
-└─ src/mock-design/             # デザイン参照用HTMLモック
+└─ .claude/rules/               # コーディング／UI／コミットの運用ルール
+    ├─ coding.md
+    ├─ commit.md
+    └─ ui.md                    # Hokkori Modernism デザイン言語の基準
 ```
+
+> UI/ビジュアル言語（カラー・タイポ・シャドウ・コンポーネント基準）の詳細は
+> `.claude/rules/ui.md` に集約。新しい画面・コンポーネントを作る前に必ず参照すること。
 
 ---
 
@@ -89,6 +95,20 @@
 
 - ソーシャル・共有機能の実装（スコープ外）
 - `src/lib/supabase/` のスキーマ変更（migrations経由で行う）
+
+---
+
+## 開発コマンド運用ガイドライン
+
+| コマンド | 用途 | いつ使うか |
+| --- | --- | --- |
+| `npm run dev` | 開発サーバー起動（ホットリロード） | 普段の開発中は立ち上げっぱなしにする |
+| `npm run lint` / `npx tsc --noEmit` | Lint・型チェック | ファイル変更時に軽く確認したいとき |
+| `npm run build` | 本番用ビルド | PR提出前・デプロイ前の最終確認のみ |
+
+- **ファイル変更のたびに `npm run build` を実行する必要はない**。`npm run dev` が自動反映する
+- 型エラーだけ確認したい場合は `npx tsc --noEmit` の方が `build` より速い
+- 本番ビルド特有の問題（SSR・環境変数・Tree Shaking等）を検証したいときだけ `build` を使う
 
 ---
 
