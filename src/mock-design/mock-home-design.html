@@ -1,0 +1,293 @@
+<!doctype html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#f2dfce",
+              tertiary: "#875218",
+              "on-tertiary-container": "#5f3400",
+              "surface-tint": "#326a35",
+              "tertiary-fixed": "#ffdcc0",
+              "primary-fixed": "#b3f2af",
+              "surface-container": "#feebd9",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#0c4918",
+              "surface-bright": "#fff8f4",
+              "on-surface": "#231a0f",
+              primary: "#326a35",
+              "primary-fixed-dim": "#98d695",
+              "secondary-fixed": "#fcdeba",
+              "surface-dim": "#e9d7c5",
+              "tertiary-container": "#de9b5b",
+              "inverse-surface": "#392e23",
+              "surface-container-high": "#f8e5d3",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#fff1e6",
+              secondary: "#705b3e",
+              "on-secondary-container": "#755f42",
+              error: "#ba1a1a",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "outline-variant": "#c1c9bc",
+              "primary-container": "#7cb87a",
+              "secondary-container": "#f9dbb7",
+              "surface-container-highest": "#f2dfce",
+              "on-error": "#ffffff",
+              "inverse-primary": "#98d695",
+              surface: "#fff8f4",
+              "tertiary-fixed-dim": "#ffb875",
+              "on-primary-fixed-variant": "#18511f",
+              "secondary-fixed-dim": "#dfc29f",
+              "on-tertiary-fixed": "#2d1600",
+              "on-background": "#231a0f",
+              "inverse-on-surface": "#ffeede",
+              "on-primary-fixed": "#002105",
+              "on-surface-variant": "#41493f",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed": "#281903",
+              "on-secondary-fixed-variant": "#574329",
+              background: "#fff8f4",
+              outline: "#71796e",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed-variant": "#6b3b00",
+            },
+            fontFamily: {
+              headline: ["Plus Jakarta Sans"],
+              body: ["Be Vietnam Pro"],
+              label: ["Plus Jakarta Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "1rem",
+              lg: "2rem",
+              xl: "3rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        background-color: #fff8f4;
+        color: #231a0f;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .garden-gradient {
+        background: linear-gradient(135deg, #7cb87a 0%, #b3f2af 100%);
+      }
+      .custom-shadow-green {
+        box-shadow: 0 20px 40px -12px rgba(124, 184, 122, 0.3);
+      }
+    </style>
+    <style>
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+  </head>
+  <body class="font-body min-h-screen flex flex-col items-center">
+    <!-- TopAppBar -->
+    <header
+      class="flex justify-between items-center px-6 py-4 w-full bg-[#fff8f4] dark:bg-stone-950 fixed top-0 z-40 max-w-md"
+    >
+      <div
+        class="text-[#326a35] dark:text-[#7cb87a] font-extrabold text-2xl font-headline tracking-tight"
+      >
+        Niwanoko
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-semibold text-secondary">はるや</span>
+        <div
+          class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm"
+        >
+          <img
+            alt="User Avatar"
+            class="w-full h-full object-cover"
+            data-alt="Illustration of a friendly Japanese character avatar"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrV66j5qOi2_R77zdfgEBIL4GtnLltlxP70O6Y8IHNfgTvyAlpu_7WPiyTLaKEgahQa7eurYPo9jYxBHCEkHUv7WaG5XFl34keU71z28ZIoUIz-yhaRz1NYcE0spier8ZrZqQUks3gKE80y6TwiUsn6kTNjLQPELRQjjdoFpMYW7Kf2MFd22s3syNfLKswljXZ4-hVjH81WiawTaYCsRdbSuIDiPKmFGdGkELONkAfblmlb1yq6Bo2_BHt_h6paN33cJlucY4gQFw"
+          />
+        </div>
+      </div>
+    </header>
+    <!-- Main Content Canvas -->
+    <main class="flex-1 w-full max-w-md px-6 pt-24 pb-32 flex flex-col gap-8">
+      <!-- Main Visual Area (Garden) -->
+      <section class="relative flex flex-col items-center justify-center py-8">
+        <div
+          class="relative w-full aspect-square max-w-[320px] rounded-full garden-gradient shadow-2xl flex items-center justify-center overflow-visible"
+        >
+          <!-- Inner Emoji Character -->
+          <span class="text-[120px] select-none leading-none drop-shadow-xl"
+            >🌿</span
+          >
+          <!-- Stage Badge (Top-Right) -->
+          <div
+            class="absolute -top-2 -right-2 bg-[#875218] text-white px-4 py-2 rounded-full font-headline font-bold text-sm shadow-lg flex items-center gap-1 border-2 border-[#fff1e6]"
+          >
+            <span>Stage 2 / 5</span>
+          </div>
+          <!-- Species Name Badge (Bottom) -->
+          <div
+            class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-surface-container-highest px-8 py-2 rounded-full shadow-md border-2 border-white"
+          >
+            <span class="font-headline font-extrabold text-[#326a35] text-lg"
+              >双葉</span
+            >
+          </div>
+        </div>
+      </section>
+      <!-- Growth Area -->
+      <section
+        class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+      >
+        <div class="flex justify-between items-end">
+          <p class="font-headline font-bold text-[#875218] text-base">
+            つぎのしんかまで <span class="text-xl">20</span>pt ✨
+          </p>
+          <span class="text-xs font-bold text-secondary opacity-60">40%</span>
+        </div>
+        <div class="relative flex items-center gap-3">
+          <span class="text-xl">🌱</span>
+          <div
+            class="flex-1 h-4 bg-surface-variant rounded-full overflow-hidden"
+          >
+            <div
+              class="h-full bg-primary-container w-[40%] rounded-full shadow-inner transition-all duration-1000"
+            ></div>
+          </div>
+          <span class="text-xl">🌸</span>
+        </div>
+      </section>
+      <!-- Main Action Section -->
+      <section class="mt-2">
+        <button
+          class="w-full h-14 bg-primary text-white rounded-xl font-headline font-bold text-lg flex items-center justify-center gap-3 active:scale-95 transition-transform duration-300 custom-shadow-green"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="
+              font-variation-settings:
+                &quot;FILL&quot; 0,
+                &quot;wght&quot; 700;
+            "
+            >add</span
+          >
+          <span>家事を報告する</span>
+        </button>
+        <p
+          class="text-center mt-4 text-sm text-secondary font-medium opacity-80"
+        >
+          今日も一日、おつかれさまです！
+        </p>
+      </section>
+      <!-- Bento Grid Insights (Extra high-end section) -->
+      <section class="grid grid-cols-2 gap-4 mt-4">
+        <div
+          class="bg-secondary-container p-4 rounded-xl flex flex-col justify-between aspect-square"
+        >
+          <span class="material-symbols-outlined text-secondary text-3xl"
+            >history_edu</span
+          >
+          <div>
+            <p
+              class="text-xs font-bold text-secondary-fixed-variant uppercase tracking-wider"
+            >
+              Total Points
+            </p>
+            <p
+              class="text-2xl font-headline font-extrabold text-on-secondary-container"
+            >
+              1,240
+            </p>
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-highest p-4 rounded-xl flex flex-col justify-between aspect-square"
+        >
+          <span class="material-symbols-outlined text-tertiary text-3xl"
+            >local_florist</span
+          >
+          <div>
+            <p class="text-xs font-bold text-tertiary uppercase tracking-wider">
+              Garden Level
+            </p>
+            <p class="text-2xl font-headline font-extrabold text-tertiary">
+              LV. 12
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+      class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center mx-auto max-w-md h-20 bg-[#fff1e6]/80 backdrop-blur-md rounded-full w-[92%] shadow-[0_12px_30px_-10px_rgba(61,50,38,0.15)]"
+    >
+      <!-- Home (Active) -->
+      <a
+        class="flex flex-col items-center justify-center bg-[#7cb87a] text-white rounded-full px-6 py-2 scale-105 shadow-md"
+        href="#"
+      >
+        <span
+          class="material-symbols-outlined"
+          data-icon="home"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          >home</span
+        >
+        <span class="font-['Be_Vietnam_Pro'] text-[11px] font-semibold"
+          >ホーム</span
+        >
+      </a>
+      <!-- Log -->
+      <a
+        class="flex flex-col items-center justify-center text-[#705b3e] px-5 py-2 hover:bg-[#f2dfce] rounded-full transition-colors"
+        href="#"
+      >
+        <span class="material-symbols-outlined" data-icon="history_edu"
+          >history_edu</span
+        >
+        <span class="font-['Be_Vietnam_Pro'] text-[11px] font-semibold"
+          >ログ</span
+        >
+      </a>
+      <!-- Settings -->
+      <a
+        class="flex flex-col items-center justify-center text-[#705b3e] px-5 py-2 hover:bg-[#f2dfce] rounded-full transition-colors"
+        href="#"
+      >
+        <span class="material-symbols-outlined" data-icon="settings"
+          >settings</span
+        >
+        <span class="font-['Be_Vietnam_Pro'] text-[11px] font-semibold"
+          >設定</span
+        >
+      </a>
+    </nav>
+  </body>
+</html>

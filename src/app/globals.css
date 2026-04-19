@@ -1,26 +1,159 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Hokkori Modernism カラートークン */
+  --surface: #fff8f4;
+  --surface-bright: #fff8f4;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #fff1e6;
+  --surface-container: #feebd9;
+  --surface-container-high: #f8e5d3;
+  --surface-container-highest: #f2dfce;
+  --surface-dim: #e9d7c5;
+  --surface-variant: #f2dfce;
+
+  --primary: #326a35;
+  --primary-container: #7cb87a;
+  --primary-fixed: #b3f2af;
+  --primary-fixed-dim: #98d695;
+  --inverse-primary: #98d695;
+  --on-primary: #ffffff;
+  --on-primary-container: #0c4918;
+  --on-primary-fixed: #002105;
+  --on-primary-fixed-variant: #18511f;
+  --surface-tint: #326a35;
+
+  --secondary: #705b3e;
+  --secondary-container: #f9dbb7;
+  --secondary-fixed: #fcdeba;
+  --secondary-fixed-dim: #dfc29f;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #755f42;
+  --on-secondary-fixed: #281903;
+  --on-secondary-fixed-variant: #574329;
+
+  --tertiary: #875218;
+  --tertiary-container: #de9b5b;
+  --tertiary-fixed: #ffdcc0;
+  --tertiary-fixed-dim: #ffb875;
+  --on-tertiary: #ffffff;
+  --on-tertiary-container: #5f3400;
+  --on-tertiary-fixed: #2d1600;
+  --on-tertiary-fixed-variant: #6b3b00;
+
+  --background: #fff8f4;
+  --on-background: #231a0f;
+  --on-surface: #231a0f;
+  --on-surface-variant: #41493f;
+
+  --outline: #71796e;
+  --outline-variant: #c1c9bc;
+  --inverse-surface: #392e23;
+  --inverse-on-surface: #ffeede;
+
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+  --on-error: #ffffff;
+  --on-error-container: #93000a;
+
+  /* shadcn/ui 互換マッピング */
+  --foreground: #231a0f;
+  --card: #fff8f4;
+  --card-foreground: #231a0f;
+  --popover: #ffffff;
+  --popover-foreground: #231a0f;
+  --muted: #fff1e6;
+  --muted-foreground: #705b3e;
+  --accent: #f2dfce;
+  --accent-foreground: #231a0f;
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+  --border: #c1c9bc;
+  --input: #f2dfce;
+  --ring: #326a35;
+
+  --radius: 1rem;
 }
 
 @theme inline {
+  --font-sans: var(--font-body);
+  --font-headline: var(--font-headline);
+  --font-body: var(--font-body);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--on-secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* カスタムカラートークン */
+  --color-surface: var(--surface);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-variant: var(--surface-variant);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-background: var(--on-background);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-full: 9999px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply outline-ring/50;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--on-background);
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .garden-gradient {
+    background: linear-gradient(135deg, #7cb87a 0%, #b3f2af 100%);
+  }
+  .custom-shadow-green {
+    box-shadow: 0 20px 40px -12px rgba(124, 184, 122, 0.3);
+  }
+  .card-shadow {
+    box-shadow: 0 12px 30px -10px rgba(61, 50, 38, 0.08);
+  }
+  .font-headline {
+    font-family: var(--font-headline), sans-serif;
+  }
+  .font-body {
+    font-family: var(--font-body), sans-serif;
+  }
 }

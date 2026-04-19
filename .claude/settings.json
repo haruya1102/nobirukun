@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"],
+    "ask": ["Bash(git push *)"],
+    "allow": ["Bash(npm run lint)", "Bash(npm run test *)"]
+  },
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "denyRead": [
+        "~/.ssh",
+        "~/.aws",
+        "~/.gnupg",
+        "~/.config/gcloud",
+        "~/.kube",
+        "~/.docker/config.json",
+        "~/.netrc",
+        "~/.npmrc",
+        "~/.pypirc",
+        "~/.cargo/credentials.toml",
+        "~/.zsh_history",
+        "~/.bash_history",
+        "~/Library/Application Support/Google/Chrome",
+        "~/Library/Application Support/Firefox",
+        "~/Library/Keychains"
+      ],
+      "allowWrite": [
+        "~/.npm",
+        "~/.cache",
+        "~/Library/Caches",
+        "~/.cargo/registry",
+        "~/go/pkg",
+        "/tmp"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "api.github.com",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "raw.githubusercontent.com",
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "crates.io",
+        "static.crates.io",
+        "proxy.golang.org",
+        "sum.golang.org",
+        "*.docker.io",
+        "registry-1.docker.io"
+      ]
+    },
+    "excludedCommands": ["docker *"]
+  }
+}

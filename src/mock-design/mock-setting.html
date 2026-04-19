@@ -1,0 +1,315 @@
+<!doctype html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#e9d7c5",
+              "secondary-fixed-dim": "#dfc29f",
+              "on-secondary-fixed": "#281903",
+              "primary-fixed-dim": "#98d695",
+              "on-primary-fixed-variant": "#18511f",
+              "on-error-container": "#93000a",
+              "on-background": "#231a0f",
+              tertiary: "#875218",
+              "on-primary-fixed": "#002105",
+              "on-tertiary": "#ffffff",
+              "on-surface-variant": "#41493f",
+              "primary-container": "#7cb87a",
+              outline: "#71796e",
+              "secondary-fixed": "#fcdeba",
+              "on-surface": "#231a0f",
+              "inverse-on-surface": "#ffeede",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb875",
+              "outline-variant": "#c1c9bc",
+              "tertiary-fixed": "#ffdcc0",
+              "surface-container-highest": "#f2dfce",
+              "tertiary-container": "#de9b5b",
+              "surface-variant": "#f2dfce",
+              error: "#ba1a1a",
+              "on-tertiary-container": "#5f3400",
+              "on-primary-container": "#0c4918",
+              "surface-container-high": "#f8e5d3",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary": "#ffffff",
+              surface: "#fff8f4",
+              "error-container": "#ffdad6",
+              "primary-fixed": "#b3f2af",
+              "surface-container-low": "#fff1e6",
+              "on-tertiary-fixed-variant": "#6b3b00",
+              "surface-container": "#feebd9",
+              primary: "#326a35",
+              "inverse-surface": "#392e23",
+              "inverse-primary": "#98d695",
+              "surface-bright": "#fff8f4",
+              "on-tertiary-fixed": "#2d1600",
+              secondary: "#705b3e",
+              "on-secondary-container": "#755f42",
+              "secondary-container": "#f9dbb7",
+              "on-error": "#ffffff",
+              "on-secondary-fixed-variant": "#574329",
+              "surface-tint": "#326a35",
+              background: "#fff8f4",
+            },
+            fontFamily: {
+              headline: ["Plus Jakarta Sans"],
+              body: ["Be Vietnam Pro"],
+              label: ["Plus Jakarta Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "1rem",
+              lg: "2rem",
+              xl: "3rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        font-family: "Be Vietnam Pro", sans-serif;
+        background-color: #fff8f4;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+    </style>
+    <style>
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+  </head>
+  <body class="bg-surface text-on-surface min-h-screen pb-32">
+    <!-- TopAppBar -->
+    <header
+      class="bg-[#fff1e6] dark:bg-stone-900 sticky top-0 z-50 flex items-center justify-between px-6 py-4 w-full"
+    >
+      <div
+        class="flex items-center justify-center w-10 h-10 rounded-full hover:scale-105 transition-transform duration-300 cursor-pointer text-[#326a35]"
+      >
+        <span class="material-symbols-outlined" data-icon="arrow_back"
+          >arrow_back</span
+        >
+      </div>
+      <h1
+        class="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-[#326a35] dark:text-[#7cb87a]"
+      >
+        せってい ⚙️
+      </h1>
+      <div class="w-10"></div>
+      <!-- Spacer for centering -->
+    </header>
+    <main class="max-w-md mx-auto px-6 pt-8">
+      <!-- User Info Section -->
+      <section class="flex flex-col items-center mb-12">
+        <div class="relative">
+          <div
+            class="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-primary-container to-primary shadow-xl"
+          >
+            <div
+              class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest border-4 border-surface"
+            >
+              <img
+                alt="はるや profile"
+                class="w-full h-full object-cover"
+                data-alt="Friendly young man with a warm smile profile picture"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU-CmBQKPIfagefXMJKQkIhl-JsPfCMOC4quI0pvrtHcuVvM7bBnSQyV7jeJ_BU12FFrQihFB1VZ9porlpojCMOJLQI4YONo3W3e2VfxpcsI3DmlJPCauP5bk9G650p-qN-bvqgNR3wzTkd5klOICWQotM3PhRjUil4RCsWqlZigtp6ObGtDFV9Y80YwWxrfR4Uvbqt6eqFDkDc_XGvVY5o62iPXiNSdCwfnNZvuSnyCArLDTs5x_rCmdQoGii4zuKcB70mA_ssoM"
+              />
+            </div>
+          </div>
+          <div
+            class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg border-2 border-surface"
+          >
+            <span
+              class="material-symbols-outlined text-xs"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+              >eco</span
+            >
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <h2
+            class="text-3xl font-extrabold tracking-tight text-on-surface mb-1"
+          >
+            はるや
+          </h2>
+          <p class="text-on-surface-variant text-sm font-medium">
+            haruya.garden@example.com
+          </p>
+        </div>
+      </section>
+      <!-- Menu List Section -->
+      <section class="space-y-4">
+        <!-- Menu Item 1 -->
+        <button
+          class="w-full flex items-center justify-between p-5 bg-surface-container-low rounded-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 flex items-center justify-center bg-surface-container-highest rounded-full text-2xl group-hover:rotate-12 transition-transform"
+            >
+              🔔
+            </div>
+            <span class="font-bold text-on-surface text-lg">つうち設定</span>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant"
+            >chevron_right</span
+          >
+        </button>
+        <!-- Menu Item 2 -->
+        <button
+          class="w-full flex items-center justify-between p-5 bg-surface-container-low rounded-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 flex items-center justify-center bg-surface-container-highest rounded-full text-2xl group-hover:rotate-12 transition-transform"
+            >
+              👨‍👩‍👧
+            </div>
+            <span class="font-bold text-on-surface text-lg"
+              >かぞくをしょうたいする</span
+            >
+          </div>
+          <span class="material-symbols-outlined text-outline-variant"
+            >chevron_right</span
+          >
+        </button>
+        <!-- Menu Item 3 -->
+        <button
+          class="w-full flex items-center justify-between p-5 bg-surface-container-low rounded-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 flex items-center justify-center bg-surface-container-highest rounded-full text-2xl group-hover:rotate-12 transition-transform"
+            >
+              🔒
+            </div>
+            <span class="font-bold text-on-surface text-lg"
+              >パスワードをかえる</span
+            >
+          </div>
+          <span class="material-symbols-outlined text-outline-variant"
+            >chevron_right</span
+          >
+        </button>
+        <!-- Menu Item 4 -->
+        <button
+          class="w-full flex items-center justify-between p-5 bg-surface-container-low rounded-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 flex items-center justify-center bg-surface-container-highest rounded-full text-2xl group-hover:rotate-12 transition-transform"
+            >
+              📋
+            </div>
+            <span class="font-bold text-on-surface text-lg">りようきやく</span>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant"
+            >chevron_right</span
+          >
+        </button>
+        <!-- Spacer -->
+        <div class="h-4"></div>
+        <!-- Logout Item -->
+        <button
+          class="w-full flex items-center justify-between p-5 bg-error-container/30 rounded-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 flex items-center justify-center bg-error-container/50 rounded-full text-2xl group-hover:scale-110 transition-transform"
+            >
+              🌿
+            </div>
+            <span class="font-bold text-error text-lg">ログアウト</span>
+          </div>
+          <span class="material-symbols-outlined text-error/40">logout</span>
+        </button>
+      </section>
+      <!-- Aesthetic Footer Graphic -->
+      <div class="mt-12 opacity-20 flex justify-center gap-2">
+        <span class="material-symbols-outlined text-primary scale-75"
+          >grass</span
+        >
+        <span class="material-symbols-outlined text-primary scale-125"
+          >eco</span
+        >
+        <span class="material-symbols-outlined text-primary scale-75"
+          >grass</span
+        >
+      </div>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+      class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center mx-auto max-w-md h-20 bg-[#fff1e6]/80 backdrop-blur-md rounded-full w-[92%] shadow-[0_12px_30px_-10px_rgba(61,50,38,0.15)]"
+    >
+      <!-- Home -->
+      <a
+        class="flex flex-col items-center justify-center text-[#705b3e] px-5 py-2 hover:bg-[#f2dfce] rounded-full transition-colors"
+        href="#"
+      >
+        <span class="material-symbols-outlined" data-icon="home">home</span>
+        <span class="font-['Be_Vietnam_Pro'] text-[11px] font-semibold"
+          >ホーム</span
+        >
+      </a>
+      <!-- Log -->
+      <a
+        class="flex flex-col items-center justify-center text-[#705b3e] px-5 py-2 hover:bg-[#f2dfce] rounded-full transition-colors"
+        href="#"
+      >
+        <span class="material-symbols-outlined" data-icon="history_edu"
+          >history_edu</span
+        >
+        <span class="font-['Be_Vietnam_Pro'] text-[11px] font-semibold"
+          >ログ</span
+        >
+      </a>
+      <!-- Settings (Active) -->
+      <a
+        class="flex flex-col items-center justify-center bg-[#7cb87a] text-white rounded-full px-6 py-2 scale-105 shadow-md"
+        href="#"
+      >
+        <span
+          class="material-symbols-outlined"
+          data-icon="settings"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          >settings</span
+        >
+        <span class="font-['Be_Vietnam_Pro'] text-[11px] font-semibold"
+          >設定</span
+        >
+      </a>
+    </nav>
+  </body>
+</html>

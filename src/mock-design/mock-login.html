@@ -1,0 +1,229 @@
+<!doctype html>
+
+<html class="light" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ログイン | Niwanoko</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#f2dfce",
+              "error-container": "#ffdad6",
+              "on-surface": "#231a0f",
+              "on-background": "#231a0f",
+              "surface-container-low": "#fff1e6",
+              "on-secondary-fixed": "#281903",
+              "inverse-primary": "#98d695",
+              "on-secondary": "#ffffff",
+              "surface-dim": "#e9d7c5",
+              "secondary-container": "#f9dbb7",
+              "on-tertiary-fixed": "#2d1600",
+              "outline-variant": "#c1c9bc",
+              "on-secondary-fixed-variant": "#574329",
+              "on-primary-container": "#0c4918",
+              "inverse-on-surface": "#ffeede",
+              "tertiary-container": "#de9b5b",
+              "on-error": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "primary-fixed-dim": "#98d695",
+              "primary-container": "#7cb87a",
+              "secondary-fixed": "#fcdeba",
+              "surface-container": "#feebd9",
+              secondary: "#705b3e",
+              "on-surface-variant": "#41493f",
+              "surface-bright": "#fff8f4",
+              "on-tertiary-container": "#5f3400",
+              "inverse-surface": "#392e23",
+              "surface-container-high": "#f8e5d3",
+              "on-secondary-container": "#755f42",
+              "tertiary-fixed": "#ffdcc0",
+              "on-primary-fixed-variant": "#18511f",
+              "on-primary": "#ffffff",
+              tertiary: "#875218",
+              "on-tertiary-fixed-variant": "#6b3b00",
+              background: "#fff8f4",
+              "surface-container-highest": "#f2dfce",
+              "surface-container-lowest": "#ffffff",
+              error: "#ba1a1a",
+              "secondary-fixed-dim": "#dfc29f",
+              "surface-tint": "#326a35",
+              outline: "#71796e",
+              "on-primary-fixed": "#002105",
+              "on-error-container": "#93000a",
+              surface: "#fff8f4",
+              "primary-fixed": "#b3f2af",
+              primary: "#326a35",
+              "tertiary-fixed-dim": "#ffb875",
+            },
+            fontFamily: {
+              headline: ["Plus Jakarta Sans"],
+              body: ["Be Vietnam Pro"],
+              label: ["Plus Jakarta Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "1rem",
+              lg: "2rem",
+              xl: "3rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #fef9f0; /* Target specific Animal Crossing cream */
+        font-family: "Be Vietnam Pro", sans-serif;
+        color: #231a0f;
+      }
+      .leaf-float {
+        display: inline-block;
+        transition: transform 0.6s ease-in-out;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(12px);
+        border: 4px solid rgba(255, 255, 255, 0.8);
+      }
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex items-center justify-center p-6 bg-[#fef9f0]">
+    <!-- Main Container -->
+    <div class="w-full max-w-md flex flex-col items-center space-y-10">
+      <!-- Logo & Catchphrase Section -->
+      <header class="text-center space-y-4">
+        <div class="leaf-float text-[120px] leading-none select-none">🌿</div>
+        <div class="space-y-1">
+          <h1
+            class="font-headline font-extrabold text-5xl tracking-tight text-[#326a35]"
+          >
+            ニワノコ
+          </h1>
+          <p class="font-body text-[#3d3226] font-bold text-sm tracking-wider">
+            おしごとしたら、にわのこがそだつ。
+          </p>
+        </div>
+      </header>
+      <!-- Login Form Container -->
+      <main
+        class="w-full bg-[#fffcf7] rounded-xl p-8 shadow-[0_12px_40px_-10px_rgba(112,91,62,0.12)] border-b-8 border-[#f2dfce]"
+      >
+        <!-- Mock Alert (Destructive) - Hidden by default but structured for demonstration -->
+        <div
+          class="mb-6 p-4 rounded-lg bg-error-container/40 border-2 border-error/10 flex items-center gap-3 text-on-error-container text-sm font-medium opacity-0 pointer-events-none absolute -top-10"
+        >
+          <span class="material-symbols-outlined text-error" data-icon="error"
+            >error</span
+          >
+          メールアドレスまたはパスワードがちがいます
+        </div>
+        <form class="space-y-6">
+          <!-- Email Input -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-[#3d3226] ml-4"
+              >メールアドレス</label
+            >
+            <input
+              class="w-full h-14 px-6 bg-[#fef9f0] border-0 rounded-lg focus:ring-4 focus:ring-primary/20 text-on-surface placeholder:text-outline/50 transition-all"
+              placeholder="your@email.com"
+              type="email"
+            />
+          </div>
+          <!-- Password Input -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-[#3d3226] ml-4"
+              >パスワード</label
+            >
+            <input
+              class="w-full h-14 px-6 bg-[#fef9f0] border-0 rounded-lg focus:ring-4 focus:ring-primary/20 text-on-surface placeholder:text-outline/50 transition-all"
+              placeholder="••••••••"
+              type="password"
+            />
+          </div>
+          <!-- Action Buttons -->
+          <div class="pt-4 space-y-4">
+            <!-- Login Button -->
+            <button
+              class="w-full h-14 bg-[#326a35] hover:opacity-90 text-white font-headline font-bold text-lg rounded-xl shadow-lg active:translate-y-1 transition-all flex items-center justify-center gap-2 group"
+              type="submit"
+            >
+              ログイン
+              <span
+                class="material-symbols-outlined text-white transition-transform group-hover:rotate-12"
+                data-icon="park"
+                >park</span
+              >
+            </button>
+            <!-- Divider -->
+            <div class="relative py-4 flex items-center justify-center">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-[#f2dfce]"></div>
+              </div>
+              <span
+                class="relative bg-[#fffcf7] px-4 text-sm font-medium text-outline"
+                >または</span
+              >
+            </div>
+            <!-- Create Account Button -->
+            <button
+              class="w-full h-14 bg-transparent border-4 border-[#705b3e] hover:bg-[#705b3e]/5 text-[#705b3e] font-headline font-bold text-lg rounded-xl transition-all"
+              type="button"
+            >
+              アカウントをつくる
+            </button>
+          </div>
+        </form>
+      </main>
+      <!-- Footer / Helper Links -->
+      <footer class="flex flex-col items-center space-y-6">
+        <a
+          class="text-sm font-medium text-outline hover:text-primary transition-colors underline underline-offset-4 decoration-2"
+          href="#"
+        >
+          パスワードをわすれた？
+        </a>
+        <!-- Visual Accent - Nature Motifs -->
+        <div class="flex gap-4 opacity-40 select-none">
+          <span
+            class="material-symbols-outlined text-3xl text-secondary"
+            data-icon="local_florist"
+            >local_florist</span
+          >
+          <span
+            class="material-symbols-outlined text-3xl text-primary"
+            data-icon="eco"
+            >eco</span
+          >
+          <span
+            class="material-symbols-outlined text-3xl text-secondary"
+            data-icon="potted_plant"
+            >potted_plant</span
+          >
+        </div>
+      </footer>
+    </div>
+    <!-- Decorative Elements (Animal Crossing Aesthetic) -->
+    <div
+      class="fixed bottom-[-5%] left-[-5%] w-64 h-64 bg-[#7cb87a] opacity-5 rounded-full blur-3xl -z-10"
+    ></div>
+    <div
+      class="fixed top-[-5%] right-[-5%] w-80 h-80 bg-tertiary opacity-5 rounded-full blur-3xl -z-10"
+    ></div>
+  </body>
+</html>
