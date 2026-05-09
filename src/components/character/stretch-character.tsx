@@ -7,7 +7,11 @@ interface StretchCharacterProps {
   size?: number
 }
 
-/** 脊椎パーツの自然位置（伸長前のSVG座標）。上から下に並ぶ。 */
+/**
+ * 脊椎パーツの自然位置（伸長前のSVG座標）。上から下に並ぶ。
+ * `height` は実際の rect 高さと一致させる：累積オフセットや vbHeight の計算と
+ * 描画される矩形の長さを同じ尺度に保つため。
+ */
 const SPINE: { id: BodyPartId; y: number; height: number }[] = [
   { id: 'neck',       y: 58,  height: 18 },
   { id: 'shoulders',  y: 74,  height: 14 },
@@ -15,7 +19,7 @@ const SPINE: { id: BodyPartId; y: number; height: number }[] = [
   { id: 'lower-back', y: 134, height: 32 },
   { id: 'hips',       y: 164, height: 18 },
   { id: 'thighs',     y: 180, height: 52 },
-  { id: 'calves',     y: 230, height: 48 }, // 含: 足
+  { id: 'calves',     y: 230, height: 44 }, // 足は別要素。下に 4px はみ出す
 ]
 
 /** SVG viewBox の幅（腕が最大2.5倍まで横に伸びる余白を十分に確保） */
@@ -25,23 +29,31 @@ const VB_X = -60
 /** 脊椎の伸長前の総高さ（足の下に少しだけマージン） */
 const BASE_HEIGHT = 290
 
-const TRANSITION = 'transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+const SPRING = '1.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+// SVG 属性 (y/x/width/height/cx/cy) は CSS プロパティとしても扱えるので
+// transition で滑らかに補間できる（Chrome 77+/Safari 14+/Firefox 75+）。
+const TRANSITION = ['y', 'x', 'width', 'height', 'cx', 'cy']
+  .map((p) => `${p} ${SPRING}`)
+  .join(', ')
+const animated = { transition: TRANSITION } as const
 
 /**
  * 各部位の scaleFactor を SVG に適用する人体キャラクター。
  *
- * 脊椎は上から下に積み上がり、上の部位が伸びると下の部位は
- * その伸長分だけ translateY で押し下げられる（重なって膨れない）。
- * 腕は横に広げた T ポーズで、scaleX で外側へ伸びる。肩の下端からの
- * 縦方向 push（首+肩の伸長）も合わせて受ける。
+ * 伸長は transform("scale") ではなく **属性値の直接書き換え** で行う：
+ * scale 変換は rect の `rx`（角丸）や stroke、`<circle>` の半径まで歪めて
+ * しまうため、`height`（縦方向）/`width`（腕）だけを scaleFactor 倍した
+ * 値で書き出し、`rx` とストローク幅は不変に保つ。これによって角丸と線の
+ * 太さが等方的に維持され、手の `<circle>` も真円のまま位置だけ移動する。
  *
- * transform は SVG 属性で直接書くことで、ブラウザ間の transform-box の
- * 解釈差異の影響を受けないようにしている。
+ * 脊椎は上から下に積み上がり、上の部位の伸長分は累積オフセットとして
+ * 下の部位の `y` に加算される（部位同士が重なって膨れない）。
+ * 腕は肩の下端からの縦オフセット（首+肩の伸長）も合わせて受ける。
  */
 export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
   const scale = (id: BodyPartId): number => stats[id]?.scaleFactor ?? 1
 
-  // 脊椎パーツの累積offset: 自分より上の部位の伸長分の合計
+  // 各脊椎パーツの「自分が始まる時点での累積下方オフセット」を求める
   const offsets = new Map<BodyPartId, number>()
   let cum = 0
   for (const p of SPINE) {
@@ -50,29 +62,29 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
   }
   const totalExtension = cum
 
+  /** 脊椎パーツの新しい y / height（rx・width・ストロークは元のまま） */
+  const sy = (id: BodyPartId, origY: number): number => origY + (offsets.get(id) ?? 0)
+  const sh = (id: BodyPartId, origH: number): number => origH * scale(id)
+
+  // 足は calves と一緒に下方向に押し下げるが、自分は伸ばさない（真円・角丸維持）
+  const calvesOffset = offsets.get('calves') ?? 0
+  const calvesPushDown = (scale('calves') - 1) * 44
+  const feetY = (origY: number): number => origY + calvesOffset + calvesPushDown
+
   // 腕は肩の下端に取り付く（首+肩の伸長分だけ Y 方向に押し下げる）
   const armsAttachOffset = offsets.get('upper-back') ?? 0
   const armScale = scale('arms')
+  // 左腕: 肩の左端 x=50 を内側固定点とし、外側へ伸ばす
+  const leftArmW = 35 * armScale
+  const leftArmX = 50 - leftArmW
+  // 右腕: 肩の右端 x=150 を内側固定点とし、外側へ伸ばす
+  const rightArmW = 35 * armScale
+  const rightHandCx = 150 + rightArmW
+  const armY = 76 + armsAttachOffset
+  const handCy = 83 + armsAttachOffset
 
   const vbHeight = BASE_HEIGHT + Math.ceil(totalExtension)
   const renderHeight = (size * vbHeight) / VB_WIDTH
-
-  /**
-   * y0 を不動点として scaleY(s) と translateY(d) を合成した SVG transform。
-   * 元の y 座標 Y は s*(Y-y0) + d + y0 へ写る。
-   */
-  const spineTx = (id: BodyPartId, y0: number): string => {
-    const s = scale(id)
-    const d = offsets.get(id) ?? 0
-    return `translate(0 ${d + y0}) scale(1 ${s}) translate(0 ${-y0})`
-  }
-
-  /**
-   * x0 を不動点として scaleX(armScale) と translateY(armsAttachOffset) を合成。
-   * 左腕は肩の左端 (x=50)、右腕は右端 (x=150) を中心に外へ伸ばす。
-   */
-  const armTx = (x0: number): string =>
-    `translate(${x0} ${armsAttachOffset}) scale(${armScale} 1) translate(${-x0} 0)`
 
   return (
     <svg
@@ -83,7 +95,7 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
       xmlns="http://www.w3.org/2000/svg"
       aria-label="ストレッチキャラクター"
       // overflow: visible で viewBox 外に出るアンチエイリアス分も切れないようにする
-      style={{ overflow: 'visible', transition: 'height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+      style={{ overflow: 'visible', transition: `height ${SPRING}` }}
     >
       {/* 頭（固定） */}
       <circle cx="100" cy="32" r="28" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="3" />
@@ -92,55 +104,91 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
       <path d="M 91 39 Q 100 46 109 39" stroke="var(--primary)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
       {/* 首 */}
-      <g transform={spineTx('neck', 58)} style={{ transition: TRANSITION }}>
-        <rect x="92" y="58" width="16" height="18" rx="6" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      <rect
+        x="92" y={sy('neck', 58)} width="16" height={sh('neck', 18)} rx="6"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
       {/* 肩 */}
-      <g transform={spineTx('shoulders', 74)} style={{ transition: TRANSITION }}>
-        <rect x="50" y="74" width="100" height="14" rx="7" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      <rect
+        x="50" y={sy('shoulders', 74)} width="100" height={sh('shoulders', 14)} rx="7"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
       {/* 胸・背中 */}
-      <g transform={spineTx('upper-back', 86)} style={{ transition: TRANSITION }}>
-        <rect x="72" y="86" width="56" height="50" rx="12" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      <rect
+        x="72" y={sy('upper-back', 86)} width="56" height={sh('upper-back', 50)} rx="12"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
       {/* 腰 */}
-      <g transform={spineTx('lower-back', 134)} style={{ transition: TRANSITION }}>
-        <rect x="78" y="134" width="44" height="32" rx="8" fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      <rect
+        x="78" y={sy('lower-back', 134)} width="44" height={sh('lower-back', 32)} rx="8"
+        fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
       {/* 股関節 */}
-      <g transform={spineTx('hips', 164)} style={{ transition: TRANSITION }}>
-        <rect x="70" y="164" width="60" height="18" rx="8" fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      <rect
+        x="70" y={sy('hips', 164)} width="60" height={sh('hips', 18)} rx="8"
+        fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
-      {/* もも */}
-      <g transform={spineTx('thighs', 180)} style={{ transition: TRANSITION }}>
-        <rect x="72" y="180" width="24" height="52" rx="10" fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5" />
-        <rect x="104" y="180" width="24" height="52" rx="10" fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      {/* もも（左右） */}
+      <rect
+        x="72" y={sy('thighs', 180)} width="24" height={sh('thighs', 52)} rx="10"
+        fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
+      <rect
+        x="104" y={sy('thighs', 180)} width="24" height={sh('thighs', 52)} rx="10"
+        fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
-      {/* ふくらはぎ + 足 */}
-      <g transform={spineTx('calves', 230)} style={{ transition: TRANSITION }}>
-        <rect x="74" y="230" width="20" height="44" rx="8" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-        <rect x="106" y="230" width="20" height="44" rx="8" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-        <rect x="68" y="268" width="32" height="10" rx="5" fill="var(--primary)" />
-        <rect x="100" y="268" width="32" height="10" rx="5" fill="var(--primary)" />
-      </g>
+      {/* ふくらはぎ（左右） */}
+      <rect
+        x="74" y={sy('calves', 230)} width="20" height={sh('calves', 44)} rx="8"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
+      <rect
+        x="106" y={sy('calves', 230)} width="20" height={sh('calves', 44)} rx="8"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
 
-      {/* 左腕（横方向・肩の左端 x=50 から外へ） */}
-      <g transform={armTx(50)} style={{ transition: TRANSITION }}>
-        <rect x="15" y="76" width="35" height="14" rx="7" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-        <circle cx="15" cy="83" r="9" fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      {/* 足（ふくらはぎと一緒に下に平行移動するだけ。伸ばさない） */}
+      <rect x="68" y={feetY(268)} width="32" height="10" rx="5" fill="var(--primary)" style={animated} />
+      <rect x="100" y={feetY(268)} width="32" height="10" rx="5" fill="var(--primary)" style={animated} />
 
-      {/* 右腕（横方向・肩の右端 x=150 から外へ） */}
-      <g transform={armTx(150)} style={{ transition: TRANSITION }}>
-        <rect x="150" y="76" width="35" height="14" rx="7" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5" />
-        <circle cx="185" cy="83" r="9" fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5" />
-      </g>
+      {/* 左腕（rect の width だけ伸ばし、手の <circle> は cx だけ平行移動） */}
+      <rect
+        x={leftArmX} y={armY} width={leftArmW} height="14" rx="7"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
+      <circle
+        cx={leftArmX} cy={handCy} r="9"
+        fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
+
+      {/* 右腕 */}
+      <rect
+        x="150" y={armY} width={rightArmW} height="14" rx="7"
+        fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
+      <circle
+        cx={rightHandCx} cy={handCy} r="9"
+        fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
+        style={animated}
+      />
     </svg>
   )
 }
