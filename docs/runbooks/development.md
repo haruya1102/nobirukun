@@ -58,16 +58,46 @@
 **目的:** 各ページのモックデータを実DBに繋ぎ、匿名認証で個人データを分離する。
 ログイン画面を介さず起動即記録できる UX を維持するため、認証は Supabase の **匿名認証（Anonymous Sign-In）** を採用する。
 
-- [ ] Supabase プロジェクト作成、`.env.local` に接続情報設定
-- [ ] Supabase ダッシュボードで匿名認証（Anonymous Sign-In）を有効化
-- [ ] `src/lib/supabase/` にクライアント・クエリ実装
-- [ ] `middleware.ts` で未セッション時に `signInAnonymously()` を自動実行
-- [ ] テーブル設計
-  - [ ] `stretch_logs` (user_id, body_part_id, recorded_at)
-  - [ ] (1日に同じ部位を複数回記録しても1日換算するためのインデックス／ユニーク制約検討)
-- [ ] Row Level Security（user_id ベース。匿名ユーザーも `auth.users` に格納されるため通常認証と同じポリシーで動作）
-- [ ] 記録保存の Server Action（`createStretchLogAction`）
-- [ ] `/home`・`/log` のログ取得を実データに差し替え
+> **注意:** 匿名認証はブラウザストレージ依存。iOS Safari は7日間未使用でストレージを自動削除する可能性がある。
+> MVP段階では許容し、Phase 6（アカウント昇格）で早期に救済する。
+
+### Step 1: Supabase プロジェクト準備（手動作業）
+
+- [x] Supabase ダッシュボードでプロジェクト作成
+- [x] Authentication → Settings で匿名認証（Anonymous Sign-In）を有効化
+- [x] `.env.local` に接続情報を設定（`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`）
+
+### Step 2: テーブル設計・RLS（SQL）
+
+- [x] `stretch_logs` テーブル作成
+  - `id` (uuid, PK, default `gen_random_uuid()`)
+  - `user_id` (uuid, FK → `auth.users`, not null)
+  - `body_part_id` (text, not null)
+  - `recorded_at` (timestamptz, not null, default `now()`)
+  - UNIQUE インデックス: `(user_id, body_part_id, (recorded_at at time zone 'Asia/Tokyo')::date)` — 同日同部位の重複をDB層で防止
+- [x] RLS有効化 + ポリシー設定（`auth.uid() = user_id` で SELECT/INSERT を許可）
+
+### Step 3: Supabase クライアント実装
+
+- [x] `@supabase/supabase-js` + `@supabase/ssr` をインストール
+- [x] `src/lib/supabase/client.ts` — ブラウザ用クライアント（`createBrowserClient`）
+- [x] `src/lib/supabase/server.ts` — Server Components / Actions 用クライアント（`createServerClient`）
+
+### Step 4: 匿名認証
+
+- [x] クライアント側の Auth プロバイダ（`src/components/auth-provider.tsx`）で未ログイン時に `signInAnonymously()` を自動実行
+- [x] `middleware.ts` はセッションのリフレッシュのみ担当（認証処理は行わない）
+
+### Step 5: Server Actions
+
+- [x] `createStretchLogAction` — 記録保存（UNIQUE制約による重複時は無視）
+- [x] ログ取得クエリ関数（`src/lib/supabase/queries.ts`）
+
+### Step 6: ページ差し替え
+
+- [x] `/home` のモックデータを実データに置き換え
+- [x] `/record` の記録処理を Server Action に接続
+- [x] `/log` のギャラリーを実データに置き換え
 
 ---
 

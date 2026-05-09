@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle2, ArrowRight } from 'lucide-react'
 import { BODY_PARTS } from '@/types'
 import type { BodyPartId } from '@/types'
+import { createStretchLogAction } from './actions'
 
 type Step = 1 | 2
 
@@ -19,8 +20,8 @@ export default function RecordPage() {
     )
   }
 
-  const handleSave = () => {
-    // TODO: Supabase の Server Action で StretchLog を保存する
+  const handleSave = async () => {
+    await createStretchLogAction(selectedParts)
     router.push('/home')
   }
 

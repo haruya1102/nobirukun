@@ -1,11 +1,10 @@
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { MonthlyCharacterCard } from '@/components/log/monthly-character-card'
 import { groupLogsByMonth } from '@/lib/growth'
-import type { StretchLog } from '@/types'
+import { fetchStretchLogs } from '@/lib/supabase/queries'
 
-export default function LogPage() {
-  // TODO: Supabase からユーザーの過去ログを取得する
-  const logs: StretchLog[] = []
+export default async function LogPage() {
+  const logs = await fetchStretchLogs()
   const monthGroups = groupLogsByMonth(logs)
 
   return (

@@ -5,12 +5,11 @@ import { StretchCharacter } from '@/components/character/stretch-character'
 import { BodyPartBadge } from '@/components/character/body-part-badge'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { calcStretchSummary } from '@/lib/growth'
+import { fetchStretchLogs } from '@/lib/supabase/queries'
 import { BODY_PARTS } from '@/types'
-import type { StretchLog } from '@/types'
 
-export default function HomePage() {
-  // TODO: Supabase からユーザーの今月分ログを取得する
-  const logs: StretchLog[] = []
+export default async function HomePage() {
+  const logs = await fetchStretchLogs()
   const summary = calcStretchSummary(logs)
 
   // 全部位の月次達成度（growthProgress 0〜1 の平均を 0〜100% に正規化）
