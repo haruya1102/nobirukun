@@ -8,9 +8,26 @@ import { calcStretchSummary } from '@/lib/growth'
 import { BODY_PARTS } from '@/types'
 import type { StretchLog } from '@/types'
 
-export default function HomePage() {
+/** ?demo=max のとき、全部位を30日分記録済みにした最大伸長状態を生成する（QA用） */
+function buildDemoMaxLogs(): StretchLog[] {
+  const now = new Date()
+  return BODY_PARTS.flatMap((part) =>
+    Array.from({ length: 30 }, (_, i) => ({
+      id: `${part.id}-${i + 1}`,
+      bodyPartId: part.id,
+      recordedAt: new Date(now.getFullYear(), now.getMonth(), i + 1, 12, 0, 0),
+    })),
+  )
+}
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ demo?: string }>
+}) {
+  const params = await searchParams
   // TODO: Supabase からユーザーの今月分ログを取得する
-  const logs: StretchLog[] = []
+  const logs: StretchLog[] = params.demo === 'max' ? buildDemoMaxLogs() : []
   const summary = calcStretchSummary(logs)
 
   // 全部位の月次達成度（growthProgress 0〜1 の平均を 0〜100% に正規化）
