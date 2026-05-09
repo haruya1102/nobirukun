@@ -15,12 +15,12 @@
 
 ## WHAT ― このシステムは何をするのか
 
-- ユーザーがストレッチした部位と時間（分）を記録する
-- 累積ストレッチ時間に応じて、画面上の人体キャラクターの各部位が連続的に伸長する
+- ユーザーがストレッチした部位を1日単位で記録する（時間は問わない）
+- 月内のユニーク記録日数に応じて、画面上の人体キャラクターの各部位が連続的に伸長する
 - 1ヶ月（暦月）単位でキャラクターがリセットされ、過去月の姿がギャラリーに残る
 - ソーシャル機能なし。個人の習慣記録に特化。
 
-**現フェーズのスコープ:** PWA（Web）。UIモックで動作確認後、Supabase連携・認証を実装。
+**現フェーズのスコープ:** PWA（Web）。UI雛形を実装したうえで Supabase 連携・認証を組み込む。
 
 ---
 
@@ -28,10 +28,10 @@
 
 | レイヤー       | 技術                                              |
 | -------------- | ------------------------------------------------- |
-| フロントエンド | Next.js 15 (App Router) + TypeScript              |
-| スタイリング   | Tailwind CSS（UIライブラリは導入せず、モックベースで自作） |
+| フロントエンド | Next.js 16 (App Router) + TypeScript              |
+| スタイリング   | Tailwind CSS v4（UIライブラリは導入せず自作）     |
 | バックエンド   | Supabase (PostgreSQL + Auth)                      |
-| アニメーション | CSS transform (scaleY) + spring easing            |
+| アニメーション | SVG transform (脊椎: scaleY / 腕: scaleX) + spring easing |
 | デプロイ       | Vercel                                            |
 
 ---
@@ -50,12 +50,10 @@
 │   │   ├─ globals.css          # カラートークン・ユーティリティ
 │   │   ├─ home/page.tsx        # ホーム（キャラクター表示）
 │   │   ├─ record/page.tsx      # ストレッチ記録フォーム
-│   │   ├─ log/page.tsx         # 月別キャラクターギャラリー
-│   │   ├─ settings/page.tsx    # 設定（目標時間など）
-│   │   └─ login/page.tsx       # 認証UI
+│   │   └─ log/page.tsx         # 月別キャラクターギャラリー
 │   ├─ components/
 │   │   ├─ character/           # キャラクター関連
-│   │   │   ├─ stretch-character.tsx   # SVG人体・部位別scaleY適用
+│   │   │   ├─ stretch-character.tsx   # SVG人体・部位別 transform 適用
 │   │   │   └─ body-part-badge.tsx    # 部位ごとの伸長率バッジ
 │   │   ├─ home/                # ホーム画面専用
 │   │   │   ├─ home-header.tsx
@@ -66,10 +64,10 @@
 │   │   └─ layout/
 │   │       └─ bottom-nav.tsx
 │   ├─ lib/
-│   │   ├─ growth.ts            # calcScaleFactor(), calcBodyPartStats()
+│   │   ├─ growth.ts            # calcScaleFactor(), calcBodyPartStats(), calcStretchSummary(), groupLogsByMonth()
 │   │   └─ supabase/            # DBクライアント・クエリ（未実装）
 │   └─ types/
-│       └─ index.ts             # BodyPart, StretchLog, BodyPartStats 型定義
+│       └─ index.ts             # BodyPartId / BODY_PARTS / StretchLog / BodyPartStats / StretchSummary 型定義
 └─ .claude/rules/               # コーディング／UI／コミットの運用ルール
     ├─ coding.md
     ├─ commit.md

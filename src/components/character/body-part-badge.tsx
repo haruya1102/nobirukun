@@ -5,15 +5,14 @@ interface BodyPartBadgeProps {
   stats: BodyPartStatsMap
 }
 
-/** 各部位の累積分数と伸長率をリスト表示するバッジ群 */
+/** 各部位の記録日数と伸長率をリスト表示するバッジ群 */
 export function BodyPartBadge({ stats }: BodyPartBadgeProps) {
   return (
     <div className="grid grid-cols-4 gap-2">
       {BODY_PARTS.map((part) => {
         const stat = stats[part.id]
-        const minutes = stat?.totalMinutes ?? 0
-        const scale = stat?.scaleFactor ?? 1
-        const pct = Math.round(((scale - 1) / 0.6) * 100)
+        const days = stat?.recordedDays ?? 0
+        const pct = Math.round((stat?.growthProgress ?? 0) * 100)
 
         return (
           <div
@@ -44,7 +43,7 @@ export function BodyPartBadge({ stats }: BodyPartBadgeProps) {
               className="text-[11px] font-bold font-headline"
               style={{ color: 'var(--primary)' }}
             >
-              {minutes}分
+              {days}日
             </span>
           </div>
         )

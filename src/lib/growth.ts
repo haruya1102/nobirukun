@@ -1,33 +1,46 @@
-import type { BodyPartId, BodyPartStats, BodyPartStatsMap, StretchLog, StretchSummary, UserSettings } from '@/types'
+import type { BodyPartId, BodyPartStats, BodyPartStatsMap, StretchLog, StretchSummary } from '@/types'
 
-export const DEFAULT_SETTINGS: UserSettings = {
-  dailyGoalMinutes: 10,
+/** 月の最大記録日数（30日記録すると最大伸長） */
+const MAX_DAYS = 30
+/** デフォルトの最大伸長率（+100% = 最大2.0倍） */
+const DEFAULT_GROWTH_FACTOR = 1.0
+/**
+ * 部位ごとの最大伸長率の上書き。
+ * 首は元の長さが短く、腕は横方向で視覚的な変化が伝わりにくいので
+ * デフォルトより大きく伸びるよう設定している。
+ */
+const PART_GROWTH_FACTOR: Partial<Record<BodyPartId, number>> = {
+  neck: 2.0,  // 最大3.0倍（ろくろ首風）
+  arms: 1.5,  // 最大2.5倍
 }
 
-/** 最大伸長率（60%伸びる） */
-const GROWTH_FACTOR = 0.6
+function growthFactorOf(id: BodyPartId): number {
+  return PART_GROWTH_FACTOR[id] ?? DEFAULT_GROWTH_FACTOR
+}
+
+function dayKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
 
 /**
- * 累積分数 → CSS scaleY 値
+ * 記録日数 → SVG transform の scale 値
  *
- * MAX_MINUTES = dailyGoalMinutes × 30（月目標）
- * scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FACTOR
+ * scaleFactor = 1 + clamp(recordedDays, 0, MAX_DAYS) / MAX_DAYS × growthFactor
  *
- * 目標を毎日達成し続けると月末に最大伸長（1.6倍）になる。
+ * growthFactor は部位ごとに異なる（PART_GROWTH_FACTOR で上書き、デフォルト1.0）。
  */
-export function calcScaleFactor(totalMinutes: number, dailyGoalMinutes: number): number {
-  const maxMinutes = Math.max(dailyGoalMinutes * 30, 1)
-  const clamped = Math.min(Math.max(totalMinutes, 0), maxMinutes)
-  return 1 + (clamped / maxMinutes) * GROWTH_FACTOR
+export function calcScaleFactor(recordedDays: number, bodyPartId: BodyPartId): number {
+  const clamped = Math.min(Math.max(recordedDays, 0), MAX_DAYS)
+  return 1 + (clamped / MAX_DAYS) * growthFactorOf(bodyPartId)
 }
 
 /**
  * StretchLog[] から各部位の BodyPartStats を計算する。
  * yearMonth を指定すると、その月のログのみで集計する（月次リセット用）。
+ * 同じ部位を同じ日に複数回記録しても1日換算。
  */
 export function calcBodyPartStats(
   logs: StretchLog[],
-  dailyGoalMinutes: number,
   yearMonth?: { year: number; month: number },
 ): BodyPartStatsMap {
   const filtered = yearMonth
@@ -37,31 +50,29 @@ export function calcBodyPartStats(
       })
     : logs
 
-  const statsMap: BodyPartStatsMap = {}
+  const dayBuckets: Partial<Record<BodyPartId, Set<string>>> = {}
+  const lastRecorded: Partial<Record<BodyPartId, Date>> = {}
 
   for (const log of filtered) {
-    const existing = statsMap[log.bodyPartId]
     const ts = new Date(log.recordedAt)
+    const set = dayBuckets[log.bodyPartId] ?? new Set<string>()
+    set.add(dayKey(ts))
+    dayBuckets[log.bodyPartId] = set
 
-    if (!existing) {
-      statsMap[log.bodyPartId] = {
-        bodyPartId: log.bodyPartId,
-        totalMinutes: log.minutes,
-        scaleFactor: 1,
-        lastRecordedAt: ts,
-      }
-    } else {
-      existing.totalMinutes += log.minutes
-      if (!existing.lastRecordedAt || ts > existing.lastRecordedAt) {
-        existing.lastRecordedAt = ts
-      }
-    }
+    const prev = lastRecorded[log.bodyPartId]
+    if (!prev || ts > prev) lastRecorded[log.bodyPartId] = ts
   }
 
-  // scaleFactor を再計算
-  for (const key of Object.keys(statsMap) as BodyPartId[]) {
-    const stat = statsMap[key] as BodyPartStats
-    stat.scaleFactor = calcScaleFactor(stat.totalMinutes, dailyGoalMinutes)
+  const statsMap: BodyPartStatsMap = {}
+  for (const key of Object.keys(dayBuckets) as BodyPartId[]) {
+    const days = dayBuckets[key]!.size
+    statsMap[key] = {
+      bodyPartId: key,
+      recordedDays: days,
+      scaleFactor: calcScaleFactor(days, key),
+      growthProgress: Math.min(days / MAX_DAYS, 1),
+      lastRecordedAt: lastRecorded[key] ?? null,
+    } satisfies BodyPartStats
   }
 
   return statsMap
@@ -70,35 +81,22 @@ export function calcBodyPartStats(
 /**
  * StretchLog[] からサマリーを計算する（今月分のみ）。
  */
-export function calcStretchSummary(
-  logs: StretchLog[],
-  dailyGoalMinutes: number,
-): StretchSummary {
+export function calcStretchSummary(logs: StretchLog[]): StretchSummary {
   const now = new Date()
   const yearMonth = { year: now.getFullYear(), month: now.getMonth() + 1 }
 
-  const stats = calcBodyPartStats(logs, dailyGoalMinutes, yearMonth)
+  const stats = calcBodyPartStats(logs, yearMonth)
 
   const thisMonthLogs = logs.filter((log) => {
     const d = new Date(log.recordedAt)
     return d.getFullYear() === yearMonth.year && d.getMonth() + 1 === yearMonth.month
   })
 
-  const totalMinutesAllParts = Object.values(stats).reduce(
-    (sum, s) => sum + (s?.totalMinutes ?? 0),
-    0,
-  )
-
-  const uniqueDays = new Set(
-    thisMonthLogs.map((log) => {
-      const d = new Date(log.recordedAt)
-      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-    }),
-  )
+  const uniqueDays = new Set(thisMonthLogs.map((log) => dayKey(new Date(log.recordedAt))))
 
   return {
     stats,
-    totalMinutesAllParts,
+    totalRecordsCount: thisMonthLogs.length,
     recordedDaysCount: uniqueDays.size,
   }
 }

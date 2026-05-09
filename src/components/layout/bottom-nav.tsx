@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Settings } from 'lucide-react'
+import { Home, BookOpen } from 'lucide-react'
 
 const navItems = [
   { href: '/home', label: 'ホーム', icon: Home },
   { href: '/log', label: '記録', icon: BookOpen },
-  { href: '/settings', label: '設定', icon: Settings },
 ]
 
 export function BottomNav() {
@@ -35,7 +34,7 @@ export function BottomNav() {
               isActive
                 ? {
                     backgroundColor: 'var(--primary-container)',
-                    color: 'white',
+                    color: 'var(--on-primary-container)',
                     transform: 'scale(1.05)',
                     boxShadow: '0 8px 20px -6px rgba(50, 106, 53, 0.35)',
                   }

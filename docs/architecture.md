@@ -17,34 +17,47 @@
 | 要素       | 内容                                                              |
 | ---------- | ----------------------------------------------------------------- |
 | 部位       | 首 / 肩 / 胸・背中 / 腰 / 股関節 / もも / ふくらはぎ / 腕・手首 |
-| 時間       | 分単位（1〜60分）                                                 |
-| 1レコード  | 部位 × 時間 × タイムスタンプ                                     |
+| 1レコード  | 部位 × タイムスタンプ                                             |
+
+時間は記録しない。「やった/やってない」だけを毎日カウントする。
+同じ部位を同じ日に複数回タップしても1日換算（重複排除）。
 
 ---
 
-## 成長計算ロジック（連続モデル）
+## 成長計算ロジック（日数ベース）
 
-各部位の累積ストレッチ時間 `totalMinutes` から CSS の `scaleY` を算出する。
+各部位の月内ユニーク記録日数 `recordedDays` から SVG transform の scale 値を算出する。
 
 ```
-dailyGoalMinutes = ユーザー設定（デフォルト: 10分）
-MAX_MINUTES      = dailyGoalMinutes × 30   // 月目標の上限
-GROWTH_FACTOR    = 0.6                     // 最大60%伸長
+MAX_DAYS              = 30      // 月内に30日記録すると最大伸長
+DEFAULT_GROWTH_FACTOR = 1.0     // 最大 +100%（= 2.0倍）
 
-scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FACTOR
+// 部位ごとの上書き
+//   首: 元の長さが短いので大きく伸ばす（ろくろ首風）
+//   腕: 横方向で変化が伝わりにくいので大きく伸ばす
+PART_GROWTH_FACTOR = {
+  neck: 2.0,  // 最大 +200%（= 3.0倍）
+  arms: 1.5,  // 最大 +150%（= 2.5倍）
+}
+
+scaleFactor = 1 + clamp(recordedDays, 0, MAX_DAYS) / MAX_DAYS × growthFactor
 ```
 
-| totalMinutes / MAX_MINUTES | scaleFactor |
-| -------------------------- | ----------- |
-| 0%                         | 1.00（等身大） |
-| 20%                        | 1.12        |
-| 50%                        | 1.30        |
-| 100%以上                   | 1.60（最大） |
+| recordedDays | 既定（1.0）   | neck（2.0）   | arms（1.5）   |
+| ------------ | ------------- | ------------- | ------------- |
+| 0日          | 1.00（等身大） | 1.00          | 1.00          |
+| 6日          | 1.20          | 1.40          | 1.30          |
+| 15日         | 1.50          | 2.00          | 1.75          |
+| 30日         | 2.00（最大）  | 3.00（最大）  | 2.50（最大）  |
 
-- `scaleFactor` は各部位の SVG `<g>` タグに `transform: scaleY(scaleFactor)` で適用。
-- トランジション: `transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)`（バネ感）
-- 上半身パーツ（首・肩・胸背中）: `transform-origin: bottom center`
-- 下半身・腕パーツ（腰〜ふくらはぎ・腕）: `transform-origin: top center`
+- 脊椎パーツ（首→肩→胸・背中→腰→股関節→もも→ふくらはぎ）は上から下に積み上がる
+- 各パーツは `translate(0, D + y0) scale(1, scaleFactor) translate(0, -y0)` を適用
+  - `y0` は当該パーツの自然位置の上端（ここを不動点として下方向に伸ばす）
+  - `D` = 自分より上の脊椎パーツの伸長量の合計（押し下げ量）
+  - これにより上の部位が伸びると下の部位は押し下げられ、重なって膨れない
+- 腕は肩の下端に取り付く: 「首+肩」の伸長分だけ translateY で押し下げ、自身は scaleX で外側に伸ばす（T ポーズ）
+- SVGの `viewBox` の高さも全体伸長量に応じて拡大し、キャラクター全身が縦に伸びて見える
+- トランジション: `transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)`（バネ感）
 
 ---
 
@@ -59,16 +72,16 @@ scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FA
 
 ## 部位定義
 
-| id           | 日本語ラベル  | transform-origin  |
-| ------------ | ------------ | ----------------- |
-| `neck`       | 首           | bottom center     |
-| `shoulders`  | 肩           | bottom center     |
-| `upper-back` | 胸・背中     | bottom center     |
-| `lower-back` | 腰           | top center        |
-| `hips`       | 股関節       | top center        |
-| `thighs`     | もも         | top center        |
-| `calves`     | ふくらはぎ   | top center        |
-| `arms`       | 腕・手首     | top center        |
+| id           | 日本語ラベル  | 種別          |
+| ------------ | ------------ | ------------- |
+| `neck`       | 首           | 脊椎          |
+| `shoulders`  | 肩           | 脊椎（腕の起点）|
+| `upper-back` | 胸・背中     | 脊椎          |
+| `lower-back` | 腰           | 脊椎          |
+| `hips`       | 股関節       | 脊椎          |
+| `thighs`     | もも         | 脊椎          |
+| `calves`     | ふくらはぎ   | 脊椎（足を含む）|
+| `arms`       | 腕・手首     | 肩から吊下    |
 
 ---
 
@@ -77,10 +90,10 @@ scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FA
 | 画面               | パス        | 内容                                              |
 | ------------------ | ----------- | ------------------------------------------------- |
 | ホーム             | `/home`     | 今月のキャラクター表示・部位別伸長状態・記録ボタン |
-| ストレッチ記録     | `/record`   | 部位選択 → 時間入力 → 確認・完了アニメーション   |
+| ストレッチ記録     | `/record`   | 部位選択 → 確認・完了アニメーション               |
 | 記録ギャラリー     | `/log`      | 過去月の完成キャラクター一覧（月別・2列グリッド）  |
-| 設定               | `/settings` | 1日の目標時間・プロフィール                       |
-| 認証               | `/login`    | ログイン・新規登録                                |
+
+> 育成ルールの説明は `/home` の初回オンボーディング（記録ゼロ件のとき表示）に内包する。
 
 ---
 
@@ -91,11 +104,11 @@ scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FA
    ↓
 2. アプリを開き「記録する」をタップ
    ↓
-3. 部位を選択（複数可）→ 時間を入力（分）
+3. 部位を選択（複数可）
    ↓
 4. 「記録する」→ キャラクターの該当部位がゆっくり伸びるアニメーション
    ↓
-5. ホームに戻ると、累積に応じた伸長状態が反映されている
+5. ホームに戻ると、月内ユニーク記録日数に応じた伸長状態が反映されている
    ↓
 6. 月が変わるとキャラクターがリセット → /log に先月の姿が追加される
 ```
@@ -107,7 +120,7 @@ scaleFactor = 1 + clamp(totalMinutes, 0, MAX_MINUTES) / MAX_MINUTES × GROWTH_FA
 - **全体トーン:** Hokkori Modernism（暖かいグリーン・ベージュ系。`#fff8f4` 背景、`#326a35` プライマリ）。
   詳細は `.claude/rules/ui.md` を参照
 - **キャラクター:** SVGで描いた人体シルエット。各 `<g>` タグに部位IDを付与し、JS から `transform` を操作
-- **アニメーション:** CSS `transform: scaleY()` + spring easing。Lottie は使用しない
+- **アニメーション:** SVG `transform` 属性（脊椎は scaleY、腕は scaleX）+ CSS `transition` による spring easing。Lottie は使用しない
 - **フォント:** Plus Jakarta Sans（ヘッドライン）/ Be Vietnam Pro（本文）を維持
 
 ---

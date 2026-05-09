@@ -4,26 +4,19 @@ import { StatsBento } from '@/components/home/stats-bento'
 import { StretchCharacter } from '@/components/character/stretch-character'
 import { BodyPartBadge } from '@/components/character/body-part-badge'
 import { BottomNav } from '@/components/layout/bottom-nav'
-import { calcStretchSummary, DEFAULT_SETTINGS } from '@/lib/growth'
+import { calcStretchSummary } from '@/lib/growth'
 import { BODY_PARTS } from '@/types'
 import type { StretchLog } from '@/types'
 
-// モックデータ（Supabase連携前の動作確認用）
-const MOCK_LOGS: StretchLog[] = [
-  { id: '1', bodyPartId: 'neck',       minutes: 5,  recordedAt: new Date() },
-  { id: '2', bodyPartId: 'shoulders',  minutes: 10, recordedAt: new Date() },
-  { id: '3', bodyPartId: 'lower-back', minutes: 8,  recordedAt: new Date() },
-  { id: '4', bodyPartId: 'thighs',     minutes: 15, recordedAt: new Date() },
-]
-
 export default function HomePage() {
-  const summary = calcStretchSummary(MOCK_LOGS, DEFAULT_SETTINGS.dailyGoalMinutes)
+  // TODO: Supabase からユーザーの今月分ログを取得する
+  const logs: StretchLog[] = []
+  const summary = calcStretchSummary(logs)
 
-  // 全部位の成長進捗（scaleFactor 1.0〜1.6 の平均を 0〜100% に正規化）
+  // 全部位の月次達成度（growthProgress 0〜1 の平均を 0〜100% に正規化）
   const growthPct = Math.round(
-    (BODY_PARTS.reduce((acc, p) => acc + ((summary.stats[p.id]?.scaleFactor ?? 1) - 1), 0) /
-      BODY_PARTS.length /
-      0.6) *
+    (BODY_PARTS.reduce((acc, p) => acc + (summary.stats[p.id]?.growthProgress ?? 0), 0) /
+      BODY_PARTS.length) *
       100,
   )
 
@@ -45,7 +38,7 @@ export default function HomePage() {
               className="absolute -top-2 -right-2 px-4 py-2 rounded-full font-headline font-bold text-sm shadow-lg flex items-center gap-1"
               style={{
                 backgroundColor: 'var(--tertiary)',
-                color: 'white',
+                color: 'var(--on-tertiary)',
                 border: '2px solid var(--surface-container-low)',
               }}
             >
@@ -56,7 +49,7 @@ export default function HomePage() {
               className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-8 py-2 rounded-full shadow-md"
               style={{
                 backgroundColor: 'var(--surface-container-highest)',
-                border: '2px solid white',
+                border: '2px solid var(--surface)',
               }}
             >
               <span
@@ -76,7 +69,7 @@ export default function HomePage() {
         >
           <div className="flex justify-between items-end">
             <p className="font-headline font-bold text-base" style={{ color: 'var(--tertiary)' }}>
-              今月の成長 <span className="text-xl">{summary.totalMinutesAllParts}</span>分 ✨
+              今月の成長 <span className="text-xl">{summary.recordedDaysCount}</span>日 ✨
             </p>
             <span className="text-xs font-bold opacity-60" style={{ color: 'var(--secondary)' }}>
               {growthPct}%
@@ -101,17 +94,32 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 記録ボタン */}
         <RecordButton />
 
         {/* 部位別伸長状態 */}
         <BodyPartBadge stats={summary.stats} />
 
-        {/* 統計ベントー */}
-        <StatsBento
-          totalMinutes={summary.totalMinutesAllParts}
-          recordedDaysCount={summary.recordedDaysCount}
-        />
+        {summary.recordedDaysCount === 0 ? (
+          // 初回オンボーディング: 記録ゼロのときだけ育て方を案内する
+          <section
+            className="p-6 rounded-xl flex flex-col gap-3"
+            style={{ backgroundColor: 'var(--surface-container-low)' }}
+          >
+            <h2 className="font-headline font-bold text-base" style={{ color: 'var(--on-surface)' }}>
+              のびるくんの育て方
+            </h2>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--on-surface-variant)' }}>
+              部位を選んで「記録する」をタップすれば、その日の1カウントになります。
+              時間は問いません。30日記録するとその部位は最大まで伸びます。
+              毎月1日にリセットされ、過去月の姿はギャラリーに残ります。
+            </p>
+          </section>
+        ) : (
+          <StatsBento
+            totalRecordsCount={summary.totalRecordsCount}
+            recordedDaysCount={summary.recordedDaysCount}
+          />
+        )}
       </main>
       <BottomNav />
     </div>

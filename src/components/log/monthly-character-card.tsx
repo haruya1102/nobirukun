@@ -1,5 +1,5 @@
 import { StretchCharacter } from '@/components/character/stretch-character'
-import { calcBodyPartStats, DEFAULT_SETTINGS } from '@/lib/growth'
+import { calcBodyPartStats } from '@/lib/growth'
 import type { StretchLog } from '@/types'
 
 interface MonthlyCharacterCardProps {
@@ -9,8 +9,18 @@ interface MonthlyCharacterCardProps {
 }
 
 export function MonthlyCharacterCard({ year, month, logs }: MonthlyCharacterCardProps) {
-  const stats = calcBodyPartStats(logs, DEFAULT_SETTINGS.dailyGoalMinutes, { year, month })
-  const totalMinutes = Object.values(stats).reduce((sum, s) => sum + (s?.totalMinutes ?? 0), 0)
+  const stats = calcBodyPartStats(logs, { year, month })
+  const uniqueDays = new Set(
+    logs
+      .filter((log) => {
+        const d = new Date(log.recordedAt)
+        return d.getFullYear() === year && d.getMonth() + 1 === month
+      })
+      .map((log) => {
+        const d = new Date(log.recordedAt)
+        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+      }),
+  ).size
 
   return (
     <div
@@ -36,10 +46,10 @@ export function MonthlyCharacterCard({ year, month, logs }: MonthlyCharacterCard
         className="mt-1 px-3 py-1 rounded-full text-xs font-bold font-headline"
         style={{
           backgroundColor: 'var(--secondary)',
-          color: 'white',
+          color: 'var(--on-secondary)',
         }}
       >
-        合計 {totalMinutes}分 🌿
+        {uniqueDays}日記録 🌿
       </div>
     </div>
   )

@@ -3,21 +3,10 @@ import { MonthlyCharacterCard } from '@/components/log/monthly-character-card'
 import { groupLogsByMonth } from '@/lib/growth'
 import type { StretchLog } from '@/types'
 
-// モックデータ（Supabase連携前の動作確認用）
-const MOCK_LOGS: StretchLog[] = [
-  // 2ヶ月前
-  { id: 'a1', bodyPartId: 'neck',      minutes: 10, recordedAt: new Date(2026, 1, 10) },
-  { id: 'a2', bodyPartId: 'shoulders', minutes: 20, recordedAt: new Date(2026, 1, 15) },
-  { id: 'a3', bodyPartId: 'thighs',    minutes: 30, recordedAt: new Date(2026, 1, 20) },
-  // 1ヶ月前
-  { id: 'b1', bodyPartId: 'lower-back', minutes: 15, recordedAt: new Date(2026, 2, 5) },
-  { id: 'b2', bodyPartId: 'calves',     minutes: 25, recordedAt: new Date(2026, 2, 12) },
-  { id: 'b3', bodyPartId: 'arms',       minutes: 10, recordedAt: new Date(2026, 2, 20) },
-  { id: 'b4', bodyPartId: 'hips',       minutes: 20, recordedAt: new Date(2026, 2, 25) },
-]
-
 export default function LogPage() {
-  const monthGroups = groupLogsByMonth(MOCK_LOGS)
+  // TODO: Supabase からユーザーの過去ログを取得する
+  const logs: StretchLog[] = []
+  const monthGroups = groupLogsByMonth(logs)
 
   return (
     <div
