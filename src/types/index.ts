@@ -13,18 +13,18 @@ export type BodyPartId =
 export interface BodyPartMeta {
   id: BodyPartId
   label: string
-  transformOrigin: 'bottom center' | 'top center'
+  emoji: string
 }
 
 export const BODY_PARTS: BodyPartMeta[] = [
-  { id: 'neck',        label: '首',         transformOrigin: 'bottom center' },
-  { id: 'shoulders',   label: '肩',         transformOrigin: 'bottom center' },
-  { id: 'upper-back',  label: '胸・背中',   transformOrigin: 'bottom center' },
-  { id: 'lower-back',  label: '腰',         transformOrigin: 'top center'    },
-  { id: 'hips',        label: '股関節',     transformOrigin: 'top center'    },
-  { id: 'thighs',      label: 'もも',       transformOrigin: 'top center'    },
-  { id: 'calves',      label: 'ふくらはぎ', transformOrigin: 'top center'    },
-  { id: 'arms',        label: '腕・手首',   transformOrigin: 'top center'    },
+  { id: 'neck',        label: '首',         emoji: '🙆' },
+  { id: 'shoulders',   label: '肩',         emoji: '💁' },
+  { id: 'upper-back',  label: '胸・背中',   emoji: '🫁' },
+  { id: 'lower-back',  label: '腰',         emoji: '🌊' },
+  { id: 'hips',        label: '股関節',     emoji: '🧘' },
+  { id: 'thighs',      label: 'もも',       emoji: '🦵' },
+  { id: 'calves',      label: 'ふくらはぎ', emoji: '🏃' },
+  { id: 'arms',        label: '腕・手首',   emoji: '💪' },
 ] as const
 
 // ========== 記録エンティティ ==========
@@ -32,7 +32,6 @@ export const BODY_PARTS: BodyPartMeta[] = [
 export interface StretchLog {
   id: string
   bodyPartId: BodyPartId
-  minutes: number       // 1〜60
   recordedAt: Date
 }
 
@@ -40,8 +39,9 @@ export interface StretchLog {
 
 export interface BodyPartStats {
   bodyPartId: BodyPartId
-  totalMinutes: number
-  scaleFactor: number   // 1.0〜1.6
+  recordedDays: number     // 当該月にこの部位を記録したユニーク日数（0〜30）
+  scaleFactor: number      // 1.0〜（部位ごとの最大倍率まで）
+  growthProgress: number   // 0〜1: 月目標(30日)に対する進捗率
   lastRecordedAt: Date | null
 }
 
@@ -49,12 +49,6 @@ export type BodyPartStatsMap = Partial<Record<BodyPartId, BodyPartStats>>
 
 export interface StretchSummary {
   stats: BodyPartStatsMap
-  totalMinutesAllParts: number
-  recordedDaysCount: number
-}
-
-// ========== ユーザー設定 ==========
-
-export interface UserSettings {
-  dailyGoalMinutes: number  // デフォルト: 10
+  totalRecordsCount: number  // 今月の総記録数（部位×日）
+  recordedDaysCount: number  // 今月いずれかの部位を記録したユニーク日数
 }

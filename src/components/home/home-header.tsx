@@ -10,6 +10,9 @@ export function HomeHeader() {
       >
         のびるクン
       </div>
+      <span className="text-sm font-semibold" style={{ color: 'var(--secondary)' }}>
+        今日もおつかれさま
+      </span>
     </header>
   )
 }
