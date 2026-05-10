@@ -1,11 +1,11 @@
 import { BottomNav } from '@/components/layout/bottom-nav'
-import { MonthlyCharacterCard } from '@/components/log/monthly-character-card'
-import { groupLogsByMonth } from '@/lib/growth'
+import { WeeklyCharacterCard } from '@/components/log/weekly-character-card'
+import { groupLogsByWeek } from '@/lib/growth'
 import { fetchStretchLogs } from '@/lib/supabase/queries'
 
 export default async function LogPage() {
   const logs = await fetchStretchLogs()
-  const monthGroups = groupLogsByMonth(logs)
+  const weekGroups = groupLogsByWeek(logs)
 
   return (
     <div
@@ -20,7 +20,7 @@ export default async function LogPage() {
           className="font-headline font-extrabold text-xl tracking-tight"
           style={{ color: 'var(--primary)' }}
         >
-          のびた記録 📖
+          のびた記録
         </h1>
       </header>
 
@@ -31,7 +31,7 @@ export default async function LogPage() {
             className="font-headline font-bold text-sm tracking-widest"
             style={{ color: 'var(--secondary)' }}
           >
-            MONTHLY GALLERY
+            WEEKLY GALLERY
           </p>
           <div
             className="h-1 w-8 rounded-full mt-1"
@@ -39,7 +39,7 @@ export default async function LogPage() {
           />
         </div>
 
-        {monthGroups.length === 0 ? (
+        {weekGroups.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
             <div
               className="w-24 h-24 rounded-full flex items-center justify-center text-5xl"
@@ -58,11 +58,10 @@ export default async function LogPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            {monthGroups.map(({ year, month, logs }) => (
-              <MonthlyCharacterCard
-                key={`${year}-${month}`}
-                year={year}
-                month={month}
+            {weekGroups.map(({ weekId, logs }) => (
+              <WeeklyCharacterCard
+                key={weekId}
+                weekId={weekId}
                 logs={logs}
               />
             ))}

@@ -5,6 +5,7 @@ import type { BodyPartId, BodyPartStatsMap } from '@/types'
 interface StretchCharacterProps {
   stats: BodyPartStatsMap
   size?: number
+  highlightParts?: BodyPartId[]
 }
 
 /**
@@ -50,7 +51,8 @@ const animated = { transition: TRANSITION } as const
  * 下の部位の `y` に加算される（部位同士が重なって膨れない）。
  * 腕は肩の下端からの縦オフセット（首+肩の伸長）も合わせて受ける。
  */
-export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
+export function StretchCharacter({ stats, size = 160, highlightParts = [] }: StretchCharacterProps) {
+  const isHighlighted = (id: BodyPartId) => highlightParts.includes(id)
   const scale = (id: BodyPartId): number => stats[id]?.scaleFactor ?? 1
 
   // 各脊椎パーツの「自分が始まる時点での累積下方オフセット」を求める
@@ -97,6 +99,25 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
       // overflow: visible で viewBox 外に出るアンチエイリアス分も切れないようにする
       style={{ overflow: 'visible', transition: `height ${SPRING}` }}
     >
+      {highlightParts.length > 0 && (
+        <defs>
+          <style>{`
+            @keyframes highlight-flash {
+              0% { opacity: 0; }
+              15% { opacity: 0.7; }
+              40% { opacity: 0.3; }
+              60% { opacity: 0.6; }
+              80% { opacity: 0.2; }
+              100% { opacity: 0; }
+            }
+            .highlight-overlay {
+              animation: highlight-flash 2s ease-out forwards;
+              pointer-events: none;
+            }
+          `}</style>
+        </defs>
+      )}
+
       {/* 頭（固定） */}
       <circle cx="100" cy="32" r="28" fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="3" />
       <circle cx="91" cy="28" r="3.5" fill="var(--primary)" />
@@ -109,6 +130,9 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('neck') && (
+        <rect x="92" y={sy('neck', 58)} width="16" height={sh('neck', 18)} rx="6" fill="#f5c542" className="highlight-overlay" style={animated} />
+      )}
 
       {/* 肩 */}
       <rect
@@ -116,6 +140,9 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('shoulders') && (
+        <rect x="50" y={sy('shoulders', 74)} width="100" height={sh('shoulders', 14)} rx="7" fill="#f5c542" className="highlight-overlay" style={animated} />
+      )}
 
       {/* 胸・背中 */}
       <rect
@@ -123,6 +150,9 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('upper-back') && (
+        <rect x="72" y={sy('upper-back', 86)} width="56" height={sh('upper-back', 50)} rx="12" fill="#f5c542" className="highlight-overlay" style={animated} />
+      )}
 
       {/* 腰 */}
       <rect
@@ -130,6 +160,9 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('lower-back') && (
+        <rect x="78" y={sy('lower-back', 134)} width="44" height={sh('lower-back', 32)} rx="8" fill="#f5c542" className="highlight-overlay" style={animated} />
+      )}
 
       {/* 股関節 */}
       <rect
@@ -137,6 +170,9 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('hips') && (
+        <rect x="70" y={sy('hips', 164)} width="60" height={sh('hips', 18)} rx="8" fill="#f5c542" className="highlight-overlay" style={animated} />
+      )}
 
       {/* もも（左右） */}
       <rect
@@ -149,6 +185,10 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('thighs') && (<>
+        <rect x="72" y={sy('thighs', 180)} width="24" height={sh('thighs', 52)} rx="10" fill="#f5c542" className="highlight-overlay" style={animated} />
+        <rect x="104" y={sy('thighs', 180)} width="24" height={sh('thighs', 52)} rx="10" fill="#f5c542" className="highlight-overlay" style={animated} />
+      </>)}
 
       {/* ふくらはぎ（左右） */}
       <rect
@@ -161,12 +201,16 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('calves') && (<>
+        <rect x="74" y={sy('calves', 230)} width="20" height={sh('calves', 44)} rx="8" fill="#f5c542" className="highlight-overlay" style={animated} />
+        <rect x="106" y={sy('calves', 230)} width="20" height={sh('calves', 44)} rx="8" fill="#f5c542" className="highlight-overlay" style={animated} />
+      </>)}
 
       {/* 足（ふくらはぎと一緒に下に平行移動するだけ。伸ばさない） */}
       <rect x="68" y={feetY(268)} width="32" height="10" rx="5" fill="var(--primary)" style={animated} />
       <rect x="100" y={feetY(268)} width="32" height="10" rx="5" fill="var(--primary)" style={animated} />
 
-      {/* 左腕（rect の width だけ伸ばし、手の <circle> は cx だけ平行移動） */}
+      {/* 左腕 */}
       <rect
         x={leftArmX} y={armY} width={leftArmW} height="14" rx="7"
         fill="var(--primary-fixed)" stroke="var(--primary)" strokeWidth="2.5"
@@ -189,6 +233,10 @@ export function StretchCharacter({ stats, size = 160 }: StretchCharacterProps) {
         fill="var(--primary-container)" stroke="var(--primary)" strokeWidth="2.5"
         style={animated}
       />
+      {isHighlighted('arms') && (<>
+        <rect x={leftArmX} y={armY} width={leftArmW} height="14" rx="7" fill="#f5c542" className="highlight-overlay" style={animated} />
+        <rect x="150" y={armY} width={rightArmW} height="14" rx="7" fill="#f5c542" className="highlight-overlay" style={animated} />
+      </>)}
     </svg>
   )
 }

@@ -22,7 +22,7 @@ export default function RecordPage() {
 
   const handleSave = async () => {
     await createStretchLogAction(selectedParts)
-    router.push('/home')
+    router.push(`/home?grew=${selectedParts.join(',')}`)
   }
 
   return (

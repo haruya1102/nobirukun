@@ -35,13 +35,18 @@ export interface StretchLog {
   recordedAt: Date
 }
 
+// ========== 週ID ==========
+
+/** 週の開始日（月曜）を "YYYY-MM-DD" 形式で表すブランド型 */
+export type WeekId = string & { readonly __brand: unique symbol }
+
 // ========== 統計・表示用 ==========
 
 export interface BodyPartStats {
   bodyPartId: BodyPartId
-  recordedDays: number     // 当該月にこの部位を記録したユニーク日数（0〜30）
+  recordedDays: number     // 当該週にこの部位を記録したユニーク日数（0〜7）
   scaleFactor: number      // 1.0〜（部位ごとの最大倍率まで）
-  growthProgress: number   // 0〜1: 月目標(30日)に対する進捗率
+  growthProgress: number   // 0〜1: 週目標(7日)に対する進捗率
   lastRecordedAt: Date | null
 }
 
@@ -49,6 +54,6 @@ export type BodyPartStatsMap = Partial<Record<BodyPartId, BodyPartStats>>
 
 export interface StretchSummary {
   stats: BodyPartStatsMap
-  totalRecordsCount: number  // 今月の総記録数（部位×日）
-  recordedDaysCount: number  // 今月いずれかの部位を記録したユニーク日数
+  totalRecordsCount: number  // 今週の総記録数（部位×日）
+  recordedDaysCount: number  // 今週いずれかの部位を記録したユニーク日数
 }

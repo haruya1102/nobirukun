@@ -1,14 +1,21 @@
 import { HomeHeader } from '@/components/home/home-header'
 import { RecordButton } from '@/components/home/record-button'
 import { StatsBento } from '@/components/home/stats-bento'
-import { StretchCharacter } from '@/components/character/stretch-character'
+import { AnimatedStretchCharacter } from '@/components/character/animated-stretch-character'
 import { BodyPartBadge } from '@/components/character/body-part-badge'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { calcStretchSummary } from '@/lib/growth'
 import { fetchStretchLogs } from '@/lib/supabase/queries'
 import { BODY_PARTS } from '@/types'
+import type { BodyPartId } from '@/types'
 
-export default async function HomePage() {
+interface HomePageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams
+  const grewParts = (typeof params.grew === 'string' ? params.grew.split(',') : []) as BodyPartId[]
   const logs = await fetchStretchLogs()
   const summary = calcStretchSummary(logs)
 
@@ -31,7 +38,7 @@ export default async function HomePage() {
           <div
             className="relative w-full aspect-square max-w-[320px] rounded-full garden-gradient custom-shadow-green flex items-center justify-center overflow-visible"
           >
-            <StretchCharacter stats={summary.stats} size={260} />
+            <AnimatedStretchCharacter stats={summary.stats} size={260} highlightParts={grewParts} />
             {/* 進捗バッジ（右上） */}
             <div
               className="absolute -top-2 -right-2 px-4 py-2 rounded-full font-headline font-bold text-sm shadow-lg flex items-center gap-1"
@@ -68,7 +75,7 @@ export default async function HomePage() {
         >
           <div className="flex justify-between items-end">
             <p className="font-headline font-bold text-base" style={{ color: 'var(--tertiary)' }}>
-              今月の成長 <span className="text-xl">{summary.recordedDaysCount}</span>日 ✨
+              今週の成長 <span className="text-xl">{summary.recordedDaysCount}</span>日 ✨
             </p>
             <span className="text-xs font-bold opacity-60" style={{ color: 'var(--secondary)' }}>
               {growthPct}%
@@ -109,8 +116,8 @@ export default async function HomePage() {
             </h2>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--on-surface-variant)' }}>
               部位を選んで「記録する」をタップすれば、その日の1カウントになります。
-              時間は問いません。30日記録するとその部位は最大まで伸びます。
-              毎月1日にリセットされ、過去月の姿はギャラリーに残ります。
+              時間は問いません。7日記録するとその部位は最大まで伸びます。
+              毎週月曜にリセットされ、過去週の姿はギャラリーに残ります。
             </p>
           </section>
         ) : (
