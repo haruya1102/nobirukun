@@ -53,7 +53,7 @@
 
 ---
 
-## Phase 3 — Supabase 連携 ⏳（現在ここ）
+## Phase 3 — Supabase 連携 ✅
 
 **目的:** 各ページのモックデータを実DBに繋ぎ、匿名認証で個人データを分離する。
 ログイン画面を介さず起動即記録できる UX を維持するため、認証は Supabase の **匿名認証（Anonymous Sign-In）** を採用する。
@@ -101,11 +101,11 @@
 
 ---
 
-## Phase 4 — PWA化
+## Phase 4 — PWA化 ⏳（現在ここ）
 
-- [ ] `manifest.json` 作成
-- [ ] Service Worker（オフライン基本キャッシュ）
-- [ ] ホーム画面追加アイコン対応
+- [x] `manifest.json` 作成
+- [x] Service Worker（オフライン基本キャッシュ）
+- [x] ホーム画面追加アイコン対応
 - [ ] Vercel にデプロイ
 
 ---
