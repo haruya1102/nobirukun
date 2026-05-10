@@ -1,21 +1,18 @@
 import { StretchCharacter } from '@/components/character/stretch-character'
-import { calcBodyPartStats } from '@/lib/growth'
+import { calcBodyPartStats, toWeekId, weekLabel } from '@/lib/growth'
 import type { StretchLog } from '@/types'
+import type { WeekId } from '@/types'
 
-interface MonthlyCharacterCardProps {
-  year: number
-  month: number
+interface WeeklyCharacterCardProps {
+  weekId: WeekId
   logs: StretchLog[]
 }
 
-export function MonthlyCharacterCard({ year, month, logs }: MonthlyCharacterCardProps) {
-  const stats = calcBodyPartStats(logs, { year, month })
+export function WeeklyCharacterCard({ weekId, logs }: WeeklyCharacterCardProps) {
+  const stats = calcBodyPartStats(logs, weekId)
   const uniqueDays = new Set(
     logs
-      .filter((log) => {
-        const d = new Date(log.recordedAt)
-        return d.getFullYear() === year && d.getMonth() + 1 === month
-      })
+      .filter((log) => toWeekId(new Date(log.recordedAt)) === weekId)
       .map((log) => {
         const d = new Date(log.recordedAt)
         return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
@@ -31,7 +28,7 @@ export function MonthlyCharacterCard({ year, month, logs }: MonthlyCharacterCard
         className="font-headline font-extrabold text-sm"
         style={{ color: 'var(--primary)' }}
       >
-        {year}年{month}月
+        {weekLabel(weekId)}
       </p>
       <div
         className="w-full aspect-square rounded-xl flex items-center justify-center"
@@ -49,7 +46,7 @@ export function MonthlyCharacterCard({ year, month, logs }: MonthlyCharacterCard
           color: 'var(--on-secondary)',
         }}
       >
-        {uniqueDays}日記録 🌿
+        {uniqueDays}日記録
       </div>
     </div>
   )
